@@ -1,3 +1,4 @@
+import * as faceapi from 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.esm.js';
 let storedDescriptor = null;
 const video = document.getElementById("video");
 const status = document.getElementById("status");
