@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Face Unlock</title>
+</head>
+<body>
+  <h2 id="status">🔒 Locked: Face Not Verified</h2>
+  <video id="video" width="320" height="240" autoplay muted></video>
+  <button onclick="verifyFace()">Verify Face</button>
+
+  <div id="unlocked-content" style="display:none;">
+    <h2>✅ Unlocked! Welcome Back.</h2>
+    <!-- Hidden content -->
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+  <script>
+    const video = document.getElementById("video");
+    const status = document.getElementById("status");
+    const unlockedContent = document.getElementById("unlocked-content");
+    let storedDescriptor = null; // You can store this from a registered user
+
+    // Start webcam
+    async function startVideo() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+      video.srcObject = stream;
+    }
+
+    // Load models
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+    ]).then(startVideo);
+
+    // You can store the face descriptor for later verification
+    async function captureReferenceFace() {
+      const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+      storedDescriptor = detection?.descriptor;
+      alert("Face Registered");
+    }
+
+    async function verifyFace() {
+      const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+      if (!detection) return alert("No face detected");
+
+      const match = faceapi.euclideanDistance(detection.descriptor, storedDescriptor);
+      if (match < 0.5) {
+        status.innerText = "✅ Unlocked";
+        unlockedContent.style.display = "block";
+      } else {
+        status.innerText = "❌ Face doesn't match";
+      }
+    }
+  </script>
+</body>
+</html>
