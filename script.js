@@ -4,7 +4,7 @@ const status = document.getElementById("status");
 const unlocked = document.getElementById("unlocked-content");
 
 // Start webcam
-async function startVideo() {
+window.startVideo = async function () {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   video.srcObject = stream;
 }
