@@ -17,7 +17,7 @@ Promise.all([
 ]).then(startVideo);
 
 // Register face
-async function registerFace() {
+window.registerFace = async function () {
   const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
     .withFaceLandmarks()
     .withFaceDescriptor();
@@ -30,7 +30,7 @@ async function registerFace() {
 }
 
 // Verify face
-async function verifyFace() {
+window.verifyFace = async function () {
   const saved = localStorage.getItem('faceDescriptor');
   if (!saved) return alert("No face registered!");
 
